@@ -18,38 +18,54 @@ function sign(payload: string) {
   return createHmac("sha256", key).update(payload).digest("hex");
 }
 
+function safeEqualString(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  if (left.length !== right.length) return false;
+  return timingSafeEqual(left, right);
+}
+
+export function normalizeAdminEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+
+export function getAdminEmail() {
+  return normalizeAdminEmail(process.env.ADMIN_EMAIL || "");
+}
+
 export function isAdminConfigured() {
-  return Boolean(process.env.ADMIN_PASSWORD?.trim());
+  return Boolean(getAdminEmail() && process.env.ADMIN_PASSWORD?.trim());
 }
 
-export function verifyAdminPassword(password: string) {
-  const expected = process.env.ADMIN_PASSWORD?.trim() || "";
-  if (!expected || !password) return false;
-  const a = Buffer.from(password);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+export function verifyAdminCredentials(email: string, password: string) {
+  const expectedEmail = getAdminEmail();
+  const expectedPassword = process.env.ADMIN_PASSWORD?.trim() || "";
+  if (!expectedEmail || !expectedPassword || !email || !password) return false;
+
+  const emailOk = safeEqualString(normalizeAdminEmail(email), expectedEmail);
+  const passOk = safeEqualString(password, expectedPassword);
+  return emailOk && passOk;
 }
 
-export function createAdminSessionToken() {
+export function createAdminSessionToken(email: string) {
   const exp = Date.now() + MAX_AGE_SEC * 1000;
-  const payload = `admin:${exp}`;
+  const payload = `${normalizeAdminEmail(email)}:${exp}`;
   return `${payload}.${sign(payload)}`;
 }
 
 export function verifyAdminSessionToken(token: string | undefined | null) {
-  if (!token || !secret()) return false;
+  if (!token || !secret() || !isAdminConfigured()) return false;
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return false;
+
   const expected = sign(payload);
-  try {
-    const ok = timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
-    if (!ok) return false;
-  } catch {
-    return false;
-  }
-  const exp = Number(payload.split(":")[1]);
-  return Number.isFinite(exp) && Date.now() < exp;
+  if (!safeEqualString(sig, expected)) return false;
+
+  const [email, expRaw] = payload.split(":");
+  const exp = Number(expRaw);
+  if (!email || !Number.isFinite(exp) || Date.now() >= exp) return false;
+
+  return safeEqualString(normalizeAdminEmail(email), getAdminEmail());
 }
 
 export async function isAdminLoggedIn() {

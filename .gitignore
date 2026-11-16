@@ -36,8 +36,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloudflare / opennext
+.open-next
+.wrangler
+.dev.vars
+.dev.vars.local
+
+# local product uploads (fallback sem R2)
+/public/uploads
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.vercel

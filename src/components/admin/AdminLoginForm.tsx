@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 
 export function AdminLoginForm() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -17,7 +18,7 @@ export function AdminLoginForm() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
@@ -35,6 +36,19 @@ export function AdminLoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <label className="block">
+        <span className="mb-1.5 block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-muted">
+          E-mail
+        </span>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="min-h-12 w-full border border-ink/15 bg-bg px-3"
+          required
+          autoComplete="username"
+        />
+      </label>
       <label className="block">
         <span className="mb-1.5 block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-muted">
           Senha

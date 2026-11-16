@@ -4,7 +4,10 @@ export type Product = {
   /** Price in centavos (BRL) */
   priceCents: number;
   category: string;
+  /** Capa (primeira imagem) */
   image: string;
+  /** Galeria completa (capa + extras) */
+  images: string[];
 };
 
 export const SIZES = ["P", "M", "G", "GG"] as const;
@@ -26,62 +29,67 @@ export const FREE_SHIPPING_FROM_CENTS = 29900;
  * Mantém só as 2 fotos oficiais do Instagram (luana-hi-1 / luana-hi-2).
  * Demais imagens: geradas em alta no estilo Conjunto Luana.
  */
+function withImages(image: string, extras: string[] = []): Pick<Product, "image" | "images"> {
+  const images = [image, ...extras.filter((u) => u && u !== image)];
+  return { image: images[0], images };
+}
+
 export const PRODUCTS: Product[] = [
   {
     id: "luana-preto",
     name: "Conjunto Luana — Preto",
     priceCents: 35990,
     category: "Conjuntos",
-    image: "/img/luana-hi-1.jpg",
+    ...withImages("/img/luana-hi-1.jpg", ["/img/luana-hi-2.jpg"]),
   },
   {
     id: "luana-azul",
     name: "Conjunto Luana — Azul céu",
     priceCents: 35990,
     category: "Conjuntos",
-    image: "/img/hq-azul.jpg",
+    ...withImages("/img/hq-azul.jpg"),
   },
   {
     id: "luana-provador",
     name: "Luana no provador",
     priceCents: 35990,
     category: "Conjuntos",
-    image: "/img/hq-provador.jpg",
+    ...withImages("/img/hq-provador.jpg"),
   },
   {
     id: "blusa-azul",
     name: "Blusa Azul Claro",
     priceCents: 12900,
     category: "Blusas",
-    image: "/img/hq-blusa.jpg",
+    ...withImages("/img/hq-blusa.jpg"),
   },
   {
     id: "saia-envelope",
     name: "Saia Envelope",
     priceCents: 15900,
     category: "Saias e shorts",
-    image: "/img/hq-saia.jpg",
+    ...withImages("/img/hq-saia.jpg"),
   },
   {
     id: "luana-detalhe",
     name: "Conjunto Luana — detalhe",
     priceCents: 35990,
     category: "Conjuntos",
-    image: "/img/luana-hi-2.jpg",
+    ...withImages("/img/luana-hi-2.jpg", ["/img/luana-hi-1.jpg"]),
   },
   {
     id: "top-menta",
     name: "Top Menta",
     priceCents: 11900,
     category: "Blusas",
-    image: "/img/hq-menta.jpg",
+    ...withImages("/img/hq-menta.jpg"),
   },
   {
     id: "conjunto-menta",
     name: "Conjunto Menta",
     priceCents: 23900,
     category: "Conjuntos",
-    image: "/img/hq-set-menta.jpg",
+    ...withImages("/img/hq-set-menta.jpg"),
   },
 ];
 

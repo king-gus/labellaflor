@@ -6,12 +6,23 @@ CREATE TABLE IF NOT EXISTS products (
   name          TEXT NOT NULL,
   category      TEXT NOT NULL DEFAULT 'Conjuntos',
   price_cents   INTEGER NOT NULL CHECK (price_cents >= 0),
-  image_url     TEXT NOT NULL,
+  image_url     TEXT NOT NULL DEFAULT '',
   description   TEXT NOT NULL DEFAULT '',
   active        BOOLEAN NOT NULL DEFAULT TRUE,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS product_images (
+  id            BIGSERIAL PRIMARY KEY,
+  product_id    TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  url           TEXT NOT NULL,
+  sort_order    INTEGER NOT NULL DEFAULT 0,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS product_images_product_idx
+  ON product_images(product_id, sort_order ASC);
 
 CREATE TABLE IF NOT EXISTS product_stock (
   product_id    TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,

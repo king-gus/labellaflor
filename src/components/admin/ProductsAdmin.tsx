@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, type FormEvent } from "react";
 import { CATEGORIES, SIZES, formatBRL, type Size } from "@/lib/products";
 import type { AdminProduct } from "@/lib/catalog";
@@ -9,7 +10,7 @@ type FormState = {
   name: string;
   category: string;
   price: string;
-  image: string;
+  images: string[];
   description: string;
   active: boolean;
   stock: Record<Size, string>;
@@ -21,7 +22,7 @@ function emptyForm(): FormState {
     name: "",
     category: CATEGORIES[0],
     price: "",
-    image: "/img/luana-hi-1.jpg",
+    images: [],
     description: "",
     active: true,
     stock: { P: "0", M: "0", G: "0", GG: "0" },
@@ -34,7 +35,7 @@ function fromProduct(p: AdminProduct): FormState {
     name: p.name,
     category: p.category,
     price: (p.priceCents / 100).toFixed(2).replace(".", ","),
-    image: p.image,
+    images: p.images?.length ? p.images : p.image ? [p.image] : [],
     description: p.description,
     active: p.active,
     stock: {
@@ -52,6 +53,7 @@ export function ProductsAdmin() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   async function load() {
     setError(null);
@@ -71,6 +73,35 @@ export function ProductsAdmin() {
     void load();
   }, []);
 
+  async function uploadFiles(fileList: FileList | null) {
+    if (!fileList?.length) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const uploaded: string[] = [];
+      for (const file of Array.from(fileList)) {
+        const body = new FormData();
+        body.set("file", file);
+        if (form.id) body.set("productId", form.id);
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body,
+        });
+        const data = (await res.json()) as { url?: string; error?: string };
+        if (!res.ok || !data.url) {
+          throw new Error(data.error || `Falha ao enviar ${file.name}`);
+        }
+        uploaded.push(data.url);
+      }
+      setForm((f) => ({ ...f, images: [...f.images, ...uploaded] }));
+      setMessage(`${uploaded.length} imagem(ns) enviada(s).`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha no upload.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -84,6 +115,12 @@ export function ProductsAdmin() {
       SIZES.map((s) => [s, Number(form.stock[s] || 0)]),
     ) as Record<Size, number>;
 
+    if (!form.images.length) {
+      setError("Adicione ao menos uma imagem.");
+      setBusy(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/products", {
         method: "POST",
@@ -92,7 +129,7 @@ export function ProductsAdmin() {
           id: form.id || form.name.toLowerCase().replace(/\s+/g, "-"),
           name: form.name,
           category: form.category,
-          image: form.image,
+          images: form.images,
           description: form.description,
           active: form.active,
           priceCents,
@@ -147,13 +184,25 @@ export function ProductsAdmin() {
     window.location.href = "/admin";
   }
 
+  function moveImage(index: number, dir: -1 | 1) {
+    setForm((f) => {
+      const next = [...f.images];
+      const target = index + dir;
+      if (target < 0 || target >= next.length) return f;
+      const tmp = next[index];
+      next[index] = next[target];
+      next[target] = tmp;
+      return { ...f, images: next };
+    });
+  }
+
   return (
     <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl">Produtos</h1>
           <p className="mt-1 text-sm text-muted">
-            Cadastro, preço, imagem e quantidade por tamanho (P/M/G/GG).
+            Cadastro, várias fotos, preço e estoque por tamanho (P/M/G/GG).
           </p>
         </div>
         <div className="flex gap-2">
@@ -220,13 +269,7 @@ export function ProductsAdmin() {
             placeholder="359,90"
             required
           />
-          <Field
-            label="URL da imagem"
-            value={form.image}
-            onChange={(v) => setForm((f) => ({ ...f, image: v }))}
-            required
-          />
-          <label className="flex items-center gap-2 pt-7 text-sm">
+          <label className="flex items-center gap-2 pt-7 text-sm md:col-span-2">
             <input
               type="checkbox"
               checked={form.active}
@@ -237,6 +280,78 @@ export function ProductsAdmin() {
             Ativo na loja
           </label>
         </div>
+
+        <div>
+          <p className="mb-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-muted">
+            Imagens (a primeira é a capa)
+          </p>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            disabled={uploading}
+            onChange={(e) => {
+              void uploadFiles(e.target.files);
+              e.target.value = "";
+            }}
+            className="block w-full text-sm"
+          />
+          {uploading && (
+            <p className="mt-2 text-sm text-muted">Enviando imagens…</p>
+          )}
+          {form.images.length > 0 && (
+            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {form.images.map((url, index) => (
+                <li key={`${url}-${index}`} className="border border-ink/10 p-2">
+                  <div className="relative aspect-square overflow-hidden bg-surface">
+                    <Image
+                      src={url}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="160px"
+                      unoptimized={url.startsWith("/api/media/") || url.startsWith("/uploads/")}
+                    />
+                    {index === 0 && (
+                      <span className="absolute left-1 top-1 bg-accent px-1.5 py-0.5 text-[0.65rem] uppercase tracking-wider text-white">
+                        Capa
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    <button
+                      type="button"
+                      className="text-[0.65rem] uppercase tracking-wider text-muted hover:text-ink"
+                      onClick={() => moveImage(index, -1)}
+                    >
+                      ←
+                    </button>
+                    <button
+                      type="button"
+                      className="text-[0.65rem] uppercase tracking-wider text-muted hover:text-ink"
+                      onClick={() => moveImage(index, 1)}
+                    >
+                      →
+                    </button>
+                    <button
+                      type="button"
+                      className="text-[0.65rem] uppercase tracking-wider text-muted hover:text-ink"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          images: f.images.filter((_, i) => i !== index),
+                        }))
+                      }
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <label className="block">
           <span className="mb-1.5 block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-muted">
             Descrição
@@ -274,7 +389,7 @@ export function ProductsAdmin() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button type="submit" className="btn" disabled={busy}>
+          <button type="submit" className="btn" disabled={busy || uploading}>
             {busy ? "Salvando…" : "Salvar produto"}
           </button>
           <button
@@ -293,20 +408,35 @@ export function ProductsAdmin() {
             key={p.id}
             className="flex flex-col gap-3 border border-ink/10 p-4 md:flex-row md:items-center md:justify-between"
           >
-            <div>
-              <p className="font-display text-lg">
-                {p.name}{" "}
-                {!p.active && (
-                  <span className="text-sm text-muted">(inativo)</span>
+            <div className="flex gap-3">
+              <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-surface">
+                {(p.images?.[0] || p.image) && (
+                  <Image
+                    src={p.images?.[0] || p.image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="56px"
+                    unoptimized
+                  />
                 )}
-              </p>
-              <p className="text-sm text-muted">
-                {p.category} · {formatBRL(p.priceCents)} · {p.id}
-              </p>
-              <p className="mt-1 text-xs text-muted">
-                Estoque:{" "}
-                {SIZES.map((s) => `${s} ${p.stock[s]}`).join(" · ")}
-              </p>
+              </div>
+              <div>
+                <p className="font-display text-lg">
+                  {p.name}{" "}
+                  {!p.active && (
+                    <span className="text-sm text-muted">(inativo)</span>
+                  )}
+                </p>
+                <p className="text-sm text-muted">
+                  {p.category} · {formatBRL(p.priceCents)} ·{" "}
+                  {p.images?.length || 1} foto(s)
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  Estoque:{" "}
+                  {SIZES.map((s) => `${s} ${p.stock[s]}`).join(" · ")}
+                </p>
+              </div>
             </div>
             <div className="flex gap-2">
               <button

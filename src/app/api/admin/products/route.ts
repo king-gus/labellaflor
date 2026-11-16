@@ -49,10 +49,18 @@ export async function POST(request: Request) {
   const id = String(body.id || "").trim();
   const name = String(body.name || "").trim();
   const category = String(body.category || "").trim();
-  const image = String(body.image || "").trim();
   const priceCents = Number(body.priceCents);
-  if (!id || !name || !category || !image || !Number.isFinite(priceCents)) {
-    return NextResponse.json({ error: "Dados do produto incompletos." }, { status: 400 });
+  const imagesRaw = Array.isArray(body.images)
+    ? body.images.map((u) => String(u || "").trim()).filter(Boolean)
+    : [];
+  const legacyImage = String(body.image || "").trim();
+  const images = imagesRaw.length ? imagesRaw : legacyImage ? [legacyImage] : [];
+
+  if (!id || !name || !category || !images.length || !Number.isFinite(priceCents)) {
+    return NextResponse.json(
+      { error: "Dados do produto incompletos (inclua ao menos 1 imagem)." },
+      { status: 400 },
+    );
   }
 
   const stockRaw = (body.stock || {}) as Partial<Record<Size, number>>;
@@ -61,16 +69,21 @@ export async function POST(request: Request) {
     stock[size] = Math.max(0, Math.floor(Number(stockRaw[size] || 0)));
   }
 
-  await upsertProduct({
-    id,
-    name,
-    category,
-    image,
-    priceCents: Math.max(0, Math.round(priceCents)),
-    description: String(body.description || ""),
-    active: body.active !== false,
-    stock,
-  });
+  try {
+    await upsertProduct({
+      id,
+      name,
+      category,
+      images,
+      priceCents: Math.max(0, Math.round(priceCents)),
+      description: String(body.description || ""),
+      active: body.active !== false,
+      stock,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Falha ao salvar.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 
   return NextResponse.json({ ok: true });
 }

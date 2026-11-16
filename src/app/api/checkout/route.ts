@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import {
-  formatBRL,
-  getProduct,
-  SIZES,
-  type Size,
-} from "@/lib/products";
+import { formatBRL, SIZES, type Size } from "@/lib/products";
 import type { CartItem } from "@/lib/cart";
+import { getStoreProduct } from "@/lib/catalog";
+import { hasDatabase } from "@/lib/db";
+import { createOrder } from "@/lib/orders";
 
 type CheckoutBody = {
   items: CartItem[];
@@ -89,7 +87,7 @@ export async function POST(request: Request) {
     if (!item?.productId || !isSize(item.size) || item.quantity < 1) {
       return NextResponse.json({ error: "Item inválido." }, { status: 400 });
     }
-    const product = getProduct(item.productId);
+    const product = await getStoreProduct(item.productId);
     if (!product) {
       return NextResponse.json(
         { error: `Produto não encontrado: ${item.productId}` },
@@ -110,7 +108,32 @@ export async function POST(request: Request) {
     0,
   );
   const shippingCents = Math.round(shipping.priceCents);
+  const totalCents = subtotalCents + shippingCents;
   const orderId = `lbf-${Date.now().toString(36)}`;
+
+  async function persistOrder(mpPreferenceId?: string) {
+    if (!hasDatabase()) return;
+    try {
+      await createOrder({
+        id: orderId,
+        status: "pending_payment",
+        customer,
+        shipping,
+        items: lines.map((l) => ({
+          productId: l.productId,
+          productName: l.title.replace(/ · Tam\. .*$/, ""),
+          size: l.size,
+          quantity: l.quantity,
+          unitPriceCents: Math.round(l.unitPrice * 100),
+        })),
+        subtotalCents,
+        totalCents,
+        mpPreferenceId,
+      });
+    } catch (err) {
+      console.error("Failed to persist order", err);
+    }
+  }
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -121,10 +144,11 @@ export async function POST(request: Request) {
   const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
   if (!token) {
+    await persistOrder();
     return NextResponse.json({
       mode: "manual",
       orderId,
-      totalLabel: formatBRL(subtotalCents + shippingCents),
+      totalLabel: formatBRL(totalCents),
       checkoutUrl: `${siteUrl}/pedido/sucesso?order=${encodeURIComponent(orderId)}&mode=manual`,
     });
   }
@@ -219,6 +243,8 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
+
+  await persistOrder(data.id);
 
   return NextResponse.json({
     mode: "mercadopago",

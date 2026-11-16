@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { CartItem } from "@/lib/cart";
-import { getProduct, SIZES, type Size } from "@/lib/products";
+import { getStoreProduct } from "@/lib/catalog";
+import { SIZES, type Size } from "@/lib/products";
 import { quoteSuperfrete } from "@/lib/shipping";
 
 type Body = {
@@ -28,12 +29,13 @@ export async function POST(request: Request) {
   }
 
   const items: CartItem[] = [];
+  const catalog = [];
   let insurance = 0;
   for (const item of body.items) {
     if (!item?.productId || !isSize(item.size) || item.quantity < 1) {
       return NextResponse.json({ error: "Item inválido." }, { status: 400 });
     }
-    const product = getProduct(item.productId);
+    const product = await getStoreProduct(item.productId);
     if (!product) {
       return NextResponse.json(
         { error: `Produto não encontrado: ${item.productId}` },
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
     }
     const qty = Math.min(item.quantity, 10);
     items.push({ productId: item.productId, size: item.size, quantity: qty });
+    catalog.push(product);
     insurance += (product.priceCents / 100) * qty;
   }
 
@@ -49,6 +52,7 @@ export async function POST(request: Request) {
     const options = await quoteSuperfrete({
       toCep: body.cep,
       items,
+      catalog,
       insuranceValueReais: Math.round(insurance * 100) / 100,
     });
 

@@ -1,10 +1,12 @@
 import Image from "next/image";
-import { PRODUCTS, formatBRL } from "@/lib/products";
+import { formatBRL } from "@/lib/products";
+import { listStoreProducts } from "@/lib/catalog";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 
-export function Novidades() {
-  const lead = PRODUCTS.slice(0, 2);
-  const rest = PRODUCTS.slice(2);
+export async function Novidades() {
+  const products = await listStoreProducts();
+  const lead = products.slice(0, 2);
+  const rest = products.slice(2);
 
   return (
     <section id="novidades" className="py-20 md:py-28">

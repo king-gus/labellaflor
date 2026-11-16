@@ -1,5 +1,5 @@
-import { getProduct } from "@/lib/products";
 import type { CartItem } from "@/lib/cart";
+import type { Product } from "@/lib/products";
 
 /** Dimensões padrão de encomenda de roupa (cm / kg) quando o produto não define. */
 export const DEFAULT_PACKAGE = {
@@ -43,9 +43,12 @@ function toCents(value: number | string | undefined) {
   return Math.round(n * 100);
 }
 
-export function buildProductsPayload(items: CartItem[]) {
+export function buildProductsPayload(
+  items: CartItem[],
+  catalog: Product[],
+) {
   return items.flatMap((item) => {
-    const product = getProduct(item.productId);
+    const product = catalog.find((p) => p.id === item.productId);
     if (!product || item.quantity < 1) return [];
     return [
       {
@@ -96,6 +99,7 @@ export function superfreteBaseUrl() {
 export async function quoteSuperfrete(args: {
   toCep: string;
   items: CartItem[];
+  catalog: Product[];
   insuranceValueReais?: number;
 }): Promise<ShippingQuoteOption[]> {
   const token = process.env.SUPERFRETE_TOKEN;
@@ -112,7 +116,7 @@ export async function quoteSuperfrete(args: {
     throw new Error("CEP de destino inválido.");
   }
 
-  const products = buildProductsPayload(args.items);
+  const products = buildProductsPayload(args.items, args.catalog);
   if (products.length === 0) {
     throw new Error("Carrinho sem produtos válidos para cotar.");
   }

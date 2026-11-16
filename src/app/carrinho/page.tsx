@@ -5,16 +5,12 @@ import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import { CloseFooter } from "@/components/CloseFooter";
 import { useCart } from "@/components/cart/CartProvider";
-import { FREE_SHIPPING_FROM_CENTS } from "@/lib/products";
 
 export default function CarrinhoPage() {
   const {
     lines,
     count,
     subtotalCents,
-    shippingCents,
-    totalCents,
-    freeShippingRemainingCents,
     format,
     setQuantity,
     removeItem,
@@ -124,14 +120,9 @@ export default function CarrinhoPage() {
 
               <aside className="h-fit border border-ink/10 bg-surface/60 p-6 md:p-8">
                 <h2 className="font-display text-2xl">Resumo</h2>
-                {freeShippingRemainingCents > 0 ? (
-                  <p className="mt-3 text-sm text-muted">
-                    Faltam {format(freeShippingRemainingCents)} para frete
-                    grátis (a partir de {format(FREE_SHIPPING_FROM_CENTS)}).
-                  </p>
-                ) : (
-                  <p className="mt-3 text-sm text-accent">Frete grátis.</p>
-                )}
+                <p className="mt-3 text-sm text-muted">
+                  Frete calculado no checkout pela SuperFrete, com base no CEP.
+                </p>
                 <dl className="mt-6 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-muted">Subtotal</dt>
@@ -139,15 +130,11 @@ export default function CarrinhoPage() {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted">Frete</dt>
-                    <dd>
-                      {shippingCents === 0
-                        ? "Grátis"
-                        : format(shippingCents)}
-                    </dd>
+                    <dd>No checkout</dd>
                   </div>
                   <div className="flex justify-between border-t border-ink/10 pt-3 text-base font-medium">
-                    <dt>Total</dt>
-                    <dd>{format(totalCents)}</dd>
+                    <dt>Subtotal</dt>
+                    <dd>{format(subtotalCents)}</dd>
                   </div>
                 </dl>
                 <Link href="/checkout" className="btn mt-8 w-full">

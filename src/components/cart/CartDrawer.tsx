@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "@/components/cart/CartProvider";
-import { FREE_SHIPPING_FROM_CENTS } from "@/lib/products";
 
 export function CartDrawer() {
   const {
@@ -13,9 +12,6 @@ export function CartDrawer() {
     lines,
     count,
     subtotalCents,
-    shippingCents,
-    totalCents,
-    freeShippingRemainingCents,
     format,
     setQuantity,
     removeItem,
@@ -157,16 +153,10 @@ export function CartDrawer() {
 
         {lines.length > 0 && (
           <footer className="border-t border-ink/10 px-5 py-5">
-            {freeShippingRemainingCents > 0 ? (
-              <p className="mb-3 text-[0.75rem] text-muted">
-                Faltam {format(freeShippingRemainingCents)} para frete grátis
-                (a partir de {format(FREE_SHIPPING_FROM_CENTS)}).
-              </p>
-            ) : (
-              <p className="mb-3 text-[0.75rem] text-accent">
-                Frete grátis neste pedido.
-              </p>
-            )}
+            <p className="mb-3 text-[0.75rem] text-muted">
+              Frete calculado no checkout com a SuperFrete (PAC, SEDEX e Mini
+              Envios).
+            </p>
             <dl className="space-y-1.5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-muted">Subtotal</dt>
@@ -174,13 +164,11 @@ export function CartDrawer() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted">Frete</dt>
-                <dd>
-                  {shippingCents === 0 ? "Grátis" : format(shippingCents)}
-                </dd>
+                <dd>No checkout</dd>
               </div>
               <div className="flex justify-between border-t border-ink/10 pt-2 text-base font-medium">
-                <dt>Total</dt>
-                <dd>{format(totalCents)}</dd>
+                <dt>Subtotal</dt>
+                <dd>{format(subtotalCents)}</dd>
               </div>
             </dl>
             <Link

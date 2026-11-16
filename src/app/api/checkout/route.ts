@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import {
   formatBRL,
   getProduct,
-  shippingForSubtotal,
   SIZES,
   type Size,
 } from "@/lib/products";
@@ -22,6 +21,12 @@ type CheckoutBody = {
     city: string;
     state: string;
   };
+  shipping: {
+    serviceId: number;
+    serviceName: string;
+    priceCents: number;
+    deliveryDays?: number | null;
+  };
 };
 
 function isSize(value: string): value is Size {
@@ -36,9 +41,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "JSON inválido." }, { status: 400 });
   }
 
-  const { items, customer } = body;
+  const { items, customer, shipping } = body;
   if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "Carrinho vazio." }, { status: 400 });
+  }
+
+  if (
+    !shipping ||
+    typeof shipping.serviceId !== "number" ||
+    typeof shipping.priceCents !== "number" ||
+    shipping.priceCents < 0 ||
+    !shipping.serviceName
+  ) {
+    return NextResponse.json(
+      { error: "Selecione uma opção de frete válida." },
+      { status: 400 },
+    );
   }
 
   const required = [
@@ -91,7 +109,7 @@ export async function POST(request: Request) {
     (sum, l) => sum + Math.round(l.unitPrice * 100) * l.quantity,
     0,
   );
-  const shippingCents = shippingForSubtotal(subtotalCents);
+  const shippingCents = Math.round(shipping.priceCents);
   const orderId = `lbf-${Date.now().toString(36)}`;
 
   const siteUrl =
@@ -103,7 +121,6 @@ export async function POST(request: Request) {
   const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
   if (!token) {
-    // Sem gateway: confirma pedido e envia para página de sucesso (pagamento manual depois).
     return NextResponse.json({
       mode: "manual",
       orderId,
@@ -125,8 +142,8 @@ export async function POST(request: Request) {
       ...(shippingCents > 0
         ? [
             {
-              id: "frete",
-              title: "Frete",
+              id: `frete-${shipping.serviceId}`,
+              title: `Frete · ${shipping.serviceName}`,
               quantity: 1,
               currency_id: "BRL",
               unit_price: shippingCents / 100,
@@ -150,6 +167,10 @@ export async function POST(request: Request) {
       neighborhood: customer.neighborhood,
       city: customer.city,
       state: customer.state,
+      shipping_service_id: String(shipping.serviceId),
+      shipping_service_name: shipping.serviceName,
+      shipping_days:
+        shipping.deliveryDays != null ? String(shipping.deliveryDays) : "",
     },
     back_urls: {
       success: `${siteUrl}/pedido/sucesso`,

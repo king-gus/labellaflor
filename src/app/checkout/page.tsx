@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { CloseFooter } from "@/components/CloseFooter";
 import { useCart } from "@/components/cart/CartProvider";
+import type { ShippingQuoteOption } from "@/lib/shipping";
 
 type FormState = {
   name: string;
@@ -33,28 +34,104 @@ const empty: FormState = {
   state: "",
 };
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
-  const { lines, items, subtotalCents, shippingCents, totalCents, format, clear } =
-    useCart();
+  const { lines, items, subtotalCents, format, clear } = useCart();
   const [form, setForm] = useState<FormState>(empty);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const [options, setOptions] = useState<ShippingQuoteOption[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const selected = useMemo(
+    () => options.find((o) => o.id === selectedId) ?? null,
+    [options, selectedId],
+  );
+  const shippingCents = selected?.priceCents ?? 0;
+  const totalCents = subtotalCents + shippingCents;
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  useEffect(() => {
+    const cep = onlyDigits(form.cep);
+    if (cep.length !== 8 || items.length === 0) {
+      setOptions([]);
+      setSelectedId(null);
+      setQuoteError(null);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setQuoteLoading(true);
+      setQuoteError(null);
+      try {
+        const res = await fetch("/api/shipping/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cep, items }),
+        });
+        const data = (await res.json()) as {
+          error?: string;
+          options?: ShippingQuoteOption[];
+        };
+        if (cancelled) return;
+        if (!res.ok || !data.options?.length) {
+          setOptions([]);
+          setSelectedId(null);
+          setQuoteError(data.error || "Não foi possível cotar o frete.");
+          return;
+        }
+        setOptions(data.options);
+        setSelectedId(data.options[0].id);
+      } catch {
+        if (!cancelled) {
+          setOptions([]);
+          setSelectedId(null);
+          setQuoteError("Falha ao consultar a SuperFrete.");
+        }
+      } finally {
+        if (!cancelled) setQuoteLoading(false);
+      }
+    }, 450);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [form.cep, items]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
+    if (!selected) {
+      setError("Escolha uma opção de frete antes de pagar.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, customer: form }),
+        body: JSON.stringify({
+          items,
+          customer: form,
+          shipping: {
+            serviceId: selected.id,
+            serviceName: `${selected.company} · ${selected.name}`,
+            priceCents: selected.priceCents,
+            deliveryDays: selected.deliveryDays,
+          },
+        }),
       });
       const data = (await res.json()) as {
         error?: string;
@@ -108,8 +185,8 @@ export default function CheckoutPage() {
               Checkout
             </h1>
             <p className="mt-2 max-w-md text-muted">
-              Informe seus dados. Você paga no Mercado Pago (Pix, cartão ou
-              boleto) — sem WhatsApp.
+              Frete cotado pela SuperFrete. Pagamento no Mercado Pago (Pix,
+              cartão ou boleto).
             </p>
 
             <form className="mt-10 space-y-8" onSubmit={onSubmit}>
@@ -187,11 +264,70 @@ export default function CheckoutPage() {
                   <Field
                     label="UF"
                     value={form.state}
-                    onChange={(v) => update("state", v.toUpperCase().slice(0, 2))}
+                    onChange={(v) =>
+                      update("state", v.toUpperCase().slice(0, 2))
+                    }
                     autoComplete="address-level1"
                     required
                   />
                 </div>
+              </fieldset>
+
+              <fieldset className="space-y-3">
+                <legend className="font-display text-xl">Frete</legend>
+                {onlyDigits(form.cep).length !== 8 && (
+                  <p className="text-sm text-muted">
+                    Digite o CEP completo para ver as opções da SuperFrete.
+                  </p>
+                )}
+                {quoteLoading && (
+                  <p className="text-sm text-muted">Calculando frete…</p>
+                )}
+                {quoteError && (
+                  <p className="text-sm text-red-700" role="alert">
+                    {quoteError}
+                  </p>
+                )}
+                <ul className="space-y-2">
+                  {options.map((opt) => {
+                    const checked = selectedId === opt.id;
+                    return (
+                      <li key={opt.id}>
+                        <label
+                          className={`flex cursor-pointer items-start justify-between gap-4 border px-4 py-3 transition ${
+                            checked
+                              ? "border-accent bg-accent/5"
+                              : "border-ink/12 hover:border-ink/25"
+                          }`}
+                        >
+                          <span className="flex items-start gap-3">
+                            <input
+                              type="radio"
+                              name="shipping"
+                              className="mt-1"
+                              checked={checked}
+                              onChange={() => setSelectedId(opt.id)}
+                            />
+                            <span>
+                              <span className="block text-sm font-medium">
+                                {opt.company} · {opt.name}
+                              </span>
+                              {opt.deliveryDays != null && (
+                                <span className="mt-0.5 block text-[0.75rem] text-muted">
+                                  Prazo: até {opt.deliveryDays}{" "}
+                                  {opt.deliveryDays === 1 ? "dia útil" : "dias úteis"}
+                                </span>
+                              )}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-sm">
+                            {format(opt.priceCents)}
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
               </fieldset>
 
               {error && (
@@ -200,7 +336,11 @@ export default function CheckoutPage() {
                 </p>
               )}
 
-              <button type="submit" className="btn w-full md:w-auto" disabled={busy}>
+              <button
+                type="submit"
+                className="btn w-full md:w-auto"
+                disabled={busy || !selected}
+              >
                 {busy ? "Redirecionando…" : "Pagar agora"}
               </button>
             </form>
@@ -229,7 +369,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between">
                 <dt className="text-muted">Frete</dt>
                 <dd>
-                  {shippingCents === 0 ? "Grátis" : format(shippingCents)}
+                  {selected ? format(shippingCents) : "Calcule no CEP"}
                 </dd>
               </div>
               <div className="flex justify-between text-base font-medium">

@@ -1,0 +1,332 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand teal from logo + soft neutrals from the Instagram feed */
+  --p-bg: #f6f3ef;
+  --p-surface: #ebe6df;
+  --p-ink: #1a1a1a;
+  --p-muted: #6a645c;
+  --p-accent: #006078;
+  --p-accent-ink: #f6f3ef;
+  --p-action: #006078;
+  --p-action-ink: #f6f3ef;
+  --p-mint: #9db8b0;
+  --wrap: min(1180px, calc(100% - 2rem));
+  --nav-h: 4.5rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@theme inline {
+  --color-bg: var(--p-bg);
+  --color-surface: var(--p-surface);
+  --color-ink: var(--p-ink);
+  --color-muted: var(--p-muted);
+  --color-accent: var(--p-accent);
+  --color-accent-ink: var(--p-accent-ink);
+  --color-mint: var(--p-mint);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--p-bg);
+  color: var(--p-ink);
+  font-family: var(--font-text), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  width: var(--wrap);
+  margin-inline: auto;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* —— Arrow buttons (dealt) —— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 48px;
+  padding: 0.85rem 1.5rem;
+  background: var(--p-action);
+  color: var(--p-action-ink);
+  font-family: var(--font-text), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease-press),
+    background-color 200ms var(--ease),
+    gap 200ms var(--ease);
+}
+
+.btn::after {
+  content: "→";
+  display: inline-block;
+  transition: transform 200ms var(--ease);
+}
+
+.btn:hover {
+  background: #004d60;
+  transform: translateY(-2px);
+  gap: 0.85rem;
+}
+
+.btn:hover::after {
+  transform: translateX(3px);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--p-ink);
+  outline-offset: 3px;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--p-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--p-ink) 18%, transparent);
+}
+
+.btn--ghost:hover {
+  background: var(--p-ink);
+  color: var(--p-bg);
+}
+
+.btn--ghost::after {
+  content: none;
+}
+
+.btn--on-dark {
+  background: var(--p-bg);
+  color: var(--p-accent);
+}
+
+.btn--on-dark:hover {
+  background: #fff;
+}
+
+.btn--sm {
+  min-height: 42px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.75rem;
+}
+
+.btn--sm::after {
+  content: none;
+}
+
+.link-draw {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms var(--ease);
+}
+
+.link-draw:hover::after,
+.link-draw:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.link-draw:focus-visible {
+  outline: 2px solid var(--p-accent);
+  outline-offset: 4px;
+}
+
+.photo-frame {
+  overflow: hidden;
+  display: block;
+  background: var(--p-surface);
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 500ms var(--ease);
+}
+
+a.photo-frame:hover img,
+.product-card:hover .photo-frame img {
+  transform: scale(1.03);
+}
+
+.product-card {
+  transition: transform 220ms var(--ease);
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Hero entrance — opacity + rise only (no blur on type) */
+[data-enter] {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: enter 650ms var(--ease) both;
+}
+
+[data-enter="1"] {
+  animation-delay: 40ms;
+}
+[data-enter="2"] {
+  animation-delay: 120ms;
+}
+[data-enter="3"] {
+  animation-delay: 200ms;
+}
+[data-enter="4"] {
+  animation-delay: 280ms;
+}
+
+@keyframes enter {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Word highlight */
+.word-moment .word {
+  color: color-mix(in srgb, var(--p-ink) 32%, transparent);
+  transition: color 100ms linear;
+}
+
+.word-moment .word.is-on {
+  color: var(--p-ink);
+}
+
+.word-moment .word.is-accent {
+  color: var(--p-accent);
+}
+
+/* Photo chapters */
+.chapters {
+  position: relative;
+}
+
+.chapters__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--p-surface);
+}
+
+@media (max-width: 767px) {
+  .chapters__stage {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.chapters__shot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity 500ms var(--ease),
+    transform 700ms var(--ease);
+  pointer-events: none;
+}
+
+.chapters__shot.is-active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.chapters__panel {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  max-width: 18rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--p-bg);
+  color: var(--p-ink);
+}
+
+@media (min-width: 768px) {
+  .chapters__panel {
+    left: 1.5rem;
+    bottom: 1.5rem;
+    max-width: 22rem;
+    padding: 1.35rem 1.5rem;
+  }
+}
+
+.phone-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  display: none;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--p-bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid color-mix(in srgb, var(--p-ink) 8%, transparent);
+}
+
+@media (max-width: 767px) {
+  .phone-bar {
+    display: block;
+  }
+
+  body {
+    padding-bottom: 4.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [data-enter] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

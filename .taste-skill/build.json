@@ -1,0 +1,11 @@
+{
+ "page": null,
+ "url": "http://localhost:3000/",
+ "root": null,
+ "kind": "place",
+ "category": "boutique de roupas",
+ "primary": "Comprar no WhatsApp",
+ "rounds": 3,
+ "start": "2026-11-14T05:16:09.193Z",
+ "by": "gate.mjs --start"
+}

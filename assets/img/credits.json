@@ -1,0 +1,47 @@
+{
+ "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "photos": [
+  {
+   "file": "photo-d88-960.jpg",
+   "files": [
+    "photo-d88-500.jpg",
+    "photo-d88-960.jpg"
+   ],
+   "id": "d88",
+   "alt": "Cream ceramic table lamp on a glossy side table, low sun throwing long shadows across a white wall",
+   "by": "LoMit",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Lamp_with_a_lampshade_illuminated_by_sunlight.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-c823-960.jpg",
+   "files": [
+    "photo-c823-500.jpg",
+    "photo-c823-960.jpg"
+   ],
+   "id": "c823",
+   "alt": "Overlapping sheets of pale grey-green card scattered at angles, seen from above, with soft shadows along their edges",
+   "by": "Brandi Redd",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Scattered_white_paper_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m61777177-960.jpg",
+   "files": [
+    "photo-m61777177-500.jpg",
+    "photo-m61777177-960.jpg"
+   ],
+   "id": "m61777177",
+   "alt": "Stack of folded wool blankets, grey, lime and pale knit, on a dark wooden table in warm light",
+   "by": "Kelly Sikkema",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Kelly_Sikkema_2016-03-09_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  }
+ ]
+}

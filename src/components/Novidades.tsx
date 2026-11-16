@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { PRODUCTS } from "@/lib/products";
-import { productWhatsAppMessage, whatsappUrl } from "@/lib/site";
+import { PRODUCTS, formatBRL } from "@/lib/products";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 
 export function Novidades() {
   const lead = PRODUCTS.slice(0, 2);
@@ -16,21 +16,15 @@ export function Novidades() {
             </h2>
             <p className="mt-3 text-muted">
               Conjunto Luana em preto e azul céu — viscose com linho, P ao GG.
-              Pedido pelo WhatsApp.
+              Adicione ao carrinho e finalize no site.
             </p>
           </div>
         </div>
 
-        {/* pair composition — two large lead looks */}
         <ul className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
           {lead.map((product) => (
             <li key={product.id} className="product-card">
-              <a
-                href={whatsappUrl(
-                  productWhatsAppMessage(product.name, product.price),
-                )}
-                className="block"
-              >
+              <div className="block">
                 <span className="photo-frame aspect-square">
                   <Image
                     src={product.image}
@@ -41,18 +35,18 @@ export function Novidades() {
                     sizes="(min-width: 768px) 50vw, 100vw"
                   />
                 </span>
-                <span className="mt-5 flex items-baseline justify-between gap-4">
+                <span className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <span>
                     <span className="block font-display text-[1.35rem] leading-snug">
                       {product.name}
                     </span>
                     <span className="mt-1 block text-[0.8125rem] tracking-wide text-muted">
-                      {product.price}
+                      {formatBRL(product.priceCents)}
                     </span>
                   </span>
-                  <span className="btn btn--sm btn--ghost shrink-0">Adicionar</span>
+                  <AddToCartButton productId={product.id} />
                 </span>
-              </a>
+              </div>
             </li>
           ))}
         </ul>
@@ -60,12 +54,7 @@ export function Novidades() {
         <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-14 md:grid-cols-3 md:gap-x-7">
           {rest.map((product) => (
             <li key={product.id} className="product-card">
-              <a
-                href={whatsappUrl(
-                  productWhatsAppMessage(product.name, product.price),
-                )}
-                className="block"
-              >
+              <div className="block">
                 <span className="photo-frame aspect-square">
                   <Image
                     src={product.image}
@@ -77,13 +66,17 @@ export function Novidades() {
                   />
                 </span>
                 <span className="mt-4 block">
-                  <span className="block text-[0.9375rem] leading-snug">{product.name}</span>
+                  <span className="block text-[0.9375rem] leading-snug">
+                    {product.name}
+                  </span>
                   <span className="mt-1 block text-[0.8125rem] text-muted">
-                    {product.price}
+                    {formatBRL(product.priceCents)}
                   </span>
                 </span>
-                <span className="btn btn--sm btn--ghost mt-4 w-full">Adicionar</span>
-              </a>
+                <div className="mt-4">
+                  <AddToCartButton productId={product.id} fullWidth />
+                </div>
+              </div>
             </li>
           ))}
         </ul>

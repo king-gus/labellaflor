@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant, Montserrat } from "next/font/google";
+import { CartProvider } from "@/components/cart/CartProvider";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
 const display = Cormorant({
@@ -43,7 +45,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <meta name="site-kind" content="other" />
         <meta name="theme-color" content="#006078" />
       </head>
-      <body className="min-h-full flex flex-col bg-bg text-ink">{children}</body>
+      <body className="min-h-full flex flex-col bg-bg text-ink">
+        <CartProvider>
+          {children}
+          <CartDrawer />
+        </CartProvider>
+      </body>
     </html>
   );
 }

@@ -9,15 +9,13 @@ export const SITE = {
   instagram: "https://www.instagram.com/labellaflor.boutique",
   handle: "@labellaflor.boutique",
   shipping: "Envios para todo o Brasil",
-  cta: "Comprar no WhatsApp",
+  cta: "Ver novidades",
+  cartCta: "Finalizar compra",
+  supportCta: "Falar no WhatsApp",
 } as const;
 
 export function whatsappUrl(message?: string) {
   const base = `https://wa.me/${SITE.whatsapp}`;
   if (!message) return base;
   return `${base}?text=${encodeURIComponent(message)}`;
-}
-
-export function productWhatsAppMessage(productName: string, price: string) {
-  return `Olá! Vi a ${productName} (${price}) no site da La Bella Flor e quero comprar.`;
 }

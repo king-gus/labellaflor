@@ -28,7 +28,7 @@ export function Visit() {
               <dt className="text-[0.68rem] font-medium uppercase tracking-[0.16em] text-muted">
                 Pedidos
               </dt>
-              <dd>WhatsApp, segunda a sábado</dd>
+              <dd>Loja online com carrinho · segunda a sábado</dd>
             </div>
             <div className="grid gap-1 sm:grid-cols-[9rem_1fr]">
               <dt className="text-[0.68rem] font-medium uppercase tracking-[0.16em] text-muted">
@@ -48,10 +48,12 @@ export function Visit() {
           </dl>
 
           <a
-            href={whatsappUrl("Olá! Quero saber mais sobre as peças da La Bella Flor.")}
+            href={whatsappUrl(
+              "Olá! Tenho uma dúvida sobre a Loja La Bella Flor.",
+            )}
             className="link-draw mt-10 inline-flex text-[0.8rem] font-medium uppercase tracking-[0.12em]"
           >
-            Abrir WhatsApp
+            Dúvidas no WhatsApp
           </a>
         </div>
 

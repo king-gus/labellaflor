@@ -1,10 +1,14 @@
 export type Product = {
   id: string;
   name: string;
-  price: string;
+  /** Price in centavos (BRL) */
+  priceCents: number;
   category: string;
   image: string;
 };
+
+export const SIZES = ["P", "M", "G", "GG"] as const;
+export type Size = (typeof SIZES)[number];
 
 export const CATEGORIES = [
   "Conjuntos",
@@ -14,6 +18,10 @@ export const CATEGORIES = [
   "Tricô",
 ] as const;
 
+/** Frete fixo; grátis a partir deste valor (centavos). */
+export const SHIPPING_CENTS = 2500;
+export const FREE_SHIPPING_FROM_CENTS = 29900;
+
 /**
  * Mantém só as 2 fotos oficiais do Instagram (luana-hi-1 / luana-hi-2).
  * Demais imagens: geradas em alta no estilo Conjunto Luana.
@@ -22,56 +30,56 @@ export const PRODUCTS: Product[] = [
   {
     id: "luana-preto",
     name: "Conjunto Luana — Preto",
-    price: "R$ 359,90",
+    priceCents: 35990,
     category: "Conjuntos",
     image: "/img/luana-hi-1.jpg",
   },
   {
     id: "luana-azul",
     name: "Conjunto Luana — Azul céu",
-    price: "R$ 359,90",
+    priceCents: 35990,
     category: "Conjuntos",
     image: "/img/hq-azul.jpg",
   },
   {
     id: "luana-provador",
     name: "Luana no provador",
-    price: "R$ 359,90",
+    priceCents: 35990,
     category: "Conjuntos",
     image: "/img/hq-provador.jpg",
   },
   {
     id: "blusa-azul",
     name: "Blusa Azul Claro",
-    price: "R$ 129",
+    priceCents: 12900,
     category: "Blusas",
     image: "/img/hq-blusa.jpg",
   },
   {
     id: "saia-envelope",
     name: "Saia Envelope",
-    price: "R$ 159",
+    priceCents: 15900,
     category: "Saias e shorts",
     image: "/img/hq-saia.jpg",
   },
   {
     id: "luana-detalhe",
     name: "Conjunto Luana — detalhe",
-    price: "R$ 359,90",
+    priceCents: 35990,
     category: "Conjuntos",
     image: "/img/luana-hi-2.jpg",
   },
   {
     id: "top-menta",
     name: "Top Menta",
-    price: "R$ 119",
+    priceCents: 11900,
     category: "Blusas",
     image: "/img/hq-menta.jpg",
   },
   {
     id: "conjunto-menta",
     name: "Conjunto Menta",
-    price: "R$ 239",
+    priceCents: 23900,
     category: "Conjuntos",
     image: "/img/hq-set-menta.jpg",
   },
@@ -97,3 +105,20 @@ export const CHAPTERS = [
     image: "/img/hq-look-preto.jpg",
   },
 ] as const;
+
+export function getProduct(id: string) {
+  return PRODUCTS.find((p) => p.id === id);
+}
+
+export function formatBRL(cents: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(cents / 100);
+}
+
+export function shippingForSubtotal(subtotalCents: number) {
+  if (subtotalCents <= 0) return 0;
+  if (subtotalCents >= FREE_SHIPPING_FROM_CENTS) return 0;
+  return SHIPPING_CENTS;
+}

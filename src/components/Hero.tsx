@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { SITE, whatsappUrl } from "@/lib/site";
+import Link from "next/link";
+import { SITE } from "@/lib/site";
 
 export function Hero() {
   return (
     <section id="top" className="pb-16 md:pb-24">
-      {/* Place hero: full-bleed photograph, nothing on it */}
       <div className="relative h-[min(72vh,680px)] w-full overflow-hidden bg-surface md:h-[min(80vh,760px)]">
         <Image
           src="/img/luana-hi-1.jpg"
@@ -40,11 +40,11 @@ export function Hero() {
         <div data-enter="4" className="md:pb-1">
           <p className="max-w-sm text-[0.95rem] leading-relaxed text-muted md:text-[1.05rem]">
             Conjuntos, vestidos e peças leves no tom chic, casual e moderno. Loja
-            online com envio para todo o Brasil.
+            online com carrinho e envio para todo o Brasil.
           </p>
-          <a href={whatsappUrl()} className="btn mt-8">
+          <Link href="/#novidades" className="btn mt-8">
             {SITE.cta}
-          </a>
+          </Link>
         </div>
       </div>
     </section>

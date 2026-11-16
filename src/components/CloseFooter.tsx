@@ -1,30 +1,30 @@
+import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
 import { SITE, whatsappUrl } from "@/lib/site";
 
 export function CloseFooter() {
   return (
     <footer className="closing">
-      {/* colour-band close */}
       <div className="bg-accent py-20 text-accent-ink md:py-28">
         <div className="wrap flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
             <h2 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-white">
-              Peça sua próxima peça
+              Monte seu look e finalize no site
             </h2>
             <p className="mt-4 text-[1.05rem] text-white/75">
-              Envio para todo o Brasil. Atendimento pelo WhatsApp.
+              Carrinho, checkout e envio para todo o Brasil. WhatsApp só para
+              dúvidas.
             </p>
           </div>
-          <a href={whatsappUrl()} className="btn btn--on-dark shrink-0">
-            {SITE.cta}
-          </a>
+          <Link href="/#novidades" className="btn btn--on-dark shrink-0">
+            Comprar agora
+          </Link>
         </div>
         <p className="wrap mt-16 font-display text-[clamp(2.75rem,11vw,7.5rem)] leading-none tracking-[-0.03em] text-white/20 md:mt-24">
           La Bella Flor
         </p>
       </div>
 
-      {/* footer-visit */}
       <div className="border-t border-ink/10 bg-ink py-14 text-[0.875rem] text-white/70">
         <div className="wrap grid gap-12 md:grid-cols-[1.2fr_1fr_1fr]">
           <div>
@@ -43,7 +43,7 @@ export function CloseFooter() {
               <li>{SITE.shipping}</li>
               <li className="pt-2">
                 <a href={whatsappUrl()} className="link-draw text-white">
-                  WhatsApp
+                  {SITE.supportCta}
                 </a>
               </li>
             </ul>
@@ -54,19 +54,19 @@ export function CloseFooter() {
             </p>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="#novidades" className="link-draw text-white">
+                <Link href="/#novidades" className="link-draw text-white">
                   Novidades
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#categorias" className="link-draw text-white">
-                  Categorias
-                </a>
+                <Link href="/carrinho" className="link-draw text-white">
+                  Carrinho
+                </Link>
               </li>
               <li>
-                <a href="#capitulos" className="link-draw text-white">
+                <Link href="/#capitulos" className="link-draw text-white">
                   A loja
-                </a>
+                </Link>
               </li>
               <li>
                 <a

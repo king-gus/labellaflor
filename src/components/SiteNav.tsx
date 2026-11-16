@@ -1,11 +1,13 @@
+import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
-import { SITE, whatsappUrl } from "@/lib/site";
+import { CartButton } from "@/components/cart/CartButton";
+import { SITE } from "@/lib/site";
 
 const links = [
-  { href: "#novidades", label: "Novidades" },
-  { href: "#categorias", label: "Categorias" },
-  { href: "#capitulos", label: "A loja" },
-  { href: "#visita", label: "Visita" },
+  { href: "/#novidades", label: "Novidades" },
+  { href: "/#categorias", label: "Categorias" },
+  { href: "/#capitulos", label: "A loja" },
+  { href: "/#visita", label: "Visita" },
 ];
 
 export function SiteNav() {
@@ -18,24 +20,22 @@ export function SiteNav() {
         <ul className="hidden items-center gap-7 md:flex">
           {links.map((link) => (
             <li key={link.href}>
-              <a
+              <Link
                 href={link.href}
                 className="link-draw text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink/80"
               >
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
-        <a href="#top" className="md:justify-self-center" aria-label={SITE.name}>
+        <Link href="/" className="md:justify-self-center" aria-label={SITE.name}>
           <BrandMark size="sm" />
-        </a>
+        </Link>
 
         <div className="md:justify-self-end">
-          <a href={whatsappUrl()} className="btn btn--sm">
-            {SITE.cta}
-          </a>
+          <CartButton />
         </div>
       </nav>
     </header>

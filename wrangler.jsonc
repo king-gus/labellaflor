@@ -3,7 +3,12 @@
   "name": "labellaflor",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-16",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public",
+    // Next/OpenNext + Neon: evita 500 "promise was created by a request that has since ended"
+    "no_handle_cross_request_promise_resolution"
+  ],
   "workers_dev": true,
   "assets": {
     "directory": ".open-next/assets",

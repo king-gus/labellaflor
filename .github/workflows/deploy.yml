@@ -39,6 +39,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # keep-vars: não apaga vars/secrets já setados no dashboard
+          # keep-vars: não apaga vars já setados no dashboard (secrets já são preservados)
           command: deploy --keep-vars
           packageManager: npm
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

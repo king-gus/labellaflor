@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { Hero } from "@/components/Hero";
 import { Visit } from "@/components/Visit";
@@ -23,7 +24,15 @@ export default function Home() {
       <SiteNav />
       <main>
         <Hero />
-        <Novidades />
+        <Suspense
+          fallback={
+            <section className="py-20 md:py-28">
+              <div className="wrap text-muted">Carregando novidades…</div>
+            </section>
+          }
+        >
+          <Novidades />
+        </Suspense>
         <Categorias />
         <PhotoChapters />
         <BleedStory />

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "La Bella Flor Boutique | Caraguatatuba",
   description:
     "Boutique de roupas em Caraguatatuba. Chic, casual e moderna. Conjuntos, vestidos e envios para todo o Brasil.",
-  metadataBase: new URL("https://labellaflor.boutique"),
+  metadataBase: new URL("https://www.labellaflorboutique.com.br"),
   openGraph: {
     title: "La Bella Flor Boutique",
     description: "chic · casual · moderna — Caraguatatuba",

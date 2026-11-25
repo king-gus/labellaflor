@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
+  // cacheComponents + Workers causa 500/hang com promessas entre requests (OpenNext#1464)
+  cacheComponents: false,
   turbopack: {
     rules: {
       "*.css": {

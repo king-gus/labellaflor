@@ -1,6 +1,11 @@
 # Variáveis Neon + Admin (para a dona da loja)
 
-Quando for configurar o banco com a cliente, crie um projeto no [Neon](https://console.neon.tech) e cole estas variáveis na **Cloudflare Workers → labellaflor → Settings → Variables and Secrets** (ver também `docs/CLOUDFLARE.md`).
+Projeto Neon **`labellaflor`** (região `aws-sa-east-1` / São Paulo) criado e schema (`db/schema.sql`) aplicado.  
+`DATABASE_URL` (pooled), `ADMIN_EMAIL` e `ADMIN_SECRET` já estão como secrets no Worker Cloudflare `labellaflor`.
+
+A cliente deve **reivindicar** o projeto Neon (conta dela) pelo link `claimable.neon.tech` gerado com `neon claim accept` — o projeto claimable expira se ninguém assumir.
+
+Ainda falta no Worker: **`ADMIN_PASSWORD`** (senha do painel `/admin`).
 
 ## Neon (obrigatórias para admin e pedidos)
 

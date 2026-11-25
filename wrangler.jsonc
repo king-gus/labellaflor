@@ -14,6 +14,17 @@
       "service": "labellaflor"
     }
   ],
+  // Domínio da loja (zona precisa existir na mesma conta Cloudflare)
+  "routes": [
+    {
+      "pattern": "www.labellaflorboutique.com.br",
+      "custom_domain": true
+    },
+    {
+      "pattern": "labellaflorboutique.com.br",
+      "custom_domain": true
+    }
+  ],
   // R2: reativar após habilitar R2 no dashboard da cliente
   // (Dashboard → R2 → Enable → bucket labellaflor-products)
   // "images": { "binding": "IMAGES" },

@@ -7,7 +7,7 @@ ADMIN_SECRET=
 
 DATABASE_URL=
 
-NEXT_PUBLIC_SITE_URL=http://localhost:8787
+NEXT_PUBLIC_SITE_URL=https://www.labellaflorboutique.com.br
 
 MERCADOPAGO_ACCESS_TOKEN=
 MERCADOPAGO_SANDBOX=true

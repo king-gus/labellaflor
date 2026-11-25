@@ -43,7 +43,7 @@ Só **uma** conta acessa o painel — a definida nestas variáveis:
 
 | Variável | Uso |
 |----------|-----|
-| `NEXT_PUBLIC_SITE_URL` | URL pública (ex.: `https://labellaflor.vercel.app`) |
+| `NEXT_PUBLIC_SITE_URL` | URL pública (`https://www.labellaflorboutique.com.br`) |
 | `MERCADOPAGO_ACCESS_TOKEN` | Pagamento |
 | `MERCADOPAGO_SANDBOX` | `true` / `false` |
 | `SUPERFRETE_TOKEN` | Cotação de frete |

@@ -62,11 +62,36 @@ npx wrangler secret put SUPERFRETE_TOKEN
 | `SUPERFRETE_SERVICES` | não | `1,2,17` |
 | `SUPERFRETE_USER_AGENT` | não | `LaBellaFlor/1.0 (nathaliasacheti@hotmail.com)` |
 
-## Domínio da cliente
+## Domínio da cliente (`www.labellaflorboutique.com.br`)
 
-Workers → **labellaflor** → **Custom Domains** → adicionar o domínio que já está na Cloudflare dela.
+O `wrangler.jsonc` já declara Custom Domains para:
 
-Atualize `NEXT_PUBLIC_SITE_URL` para esse domínio (necessário para retorno do Mercado Pago).
+- `www.labellaflorboutique.com.br` (principal)
+- `labellaflorboutique.com.br` (apex)
+
+### 1. Colocar o domínio na conta Cloudflare da cliente
+
+Hoje a zona **ainda não existe** na conta `nathaliasacheti@hotmail.com`.
+
+1. Dashboard → [Add a site](https://dash.cloudflare.com/413dcccffa252cb46d832d037bfd165d/add-site) → `labellaflorboutique.com.br`
+2. Plano Free basta
+3. Cloudflare mostra 2 nameservers (ex.: `xxx.ns.cloudflare.com`)
+4. No [Registro.br](https://registro.br) → domínio → DNS → trocar nameservers para os da Cloudflare
+5. Esperar propagação (minutos a algumas horas) até o status da zona ficar **Active**
+
+### 2. Ligar o domínio ao Worker
+
+Depois do primeiro deploy do Worker `labellaflor`, o Wrangler cria os Custom Domains automaticamente pelas `routes` do `wrangler.jsonc`.
+
+Ou no painel: Workers → **labellaflor** → Settings → Domains & Routes → Add → Custom Domain.
+
+### 3. URL pública da loja
+
+```text
+NEXT_PUBLIC_SITE_URL=https://www.labellaflorboutique.com.br
+```
+
+(necessário para retorno do Mercado Pago)
 
 ## Preview local (runtime Workers)
 

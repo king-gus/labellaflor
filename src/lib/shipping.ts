@@ -123,7 +123,7 @@ export async function quoteSuperfrete(args: {
 
   const userAgent =
     process.env.SUPERFRETE_USER_AGENT ||
-    "LaBellaFlor/1.0 (contato@labellaflor.boutique)";
+    "LaBellaFlor/1.0 (nathaliasacheti@hotmail.com)";
 
   const res = await fetch(`${superfreteBaseUrl()}/api/v0/calculator`, {
     method: "POST",

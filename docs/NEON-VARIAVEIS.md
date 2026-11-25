@@ -50,13 +50,13 @@ Só **uma** conta acessa o painel — a definida nestas variáveis:
 | `SUPERFRETE_ORIGIN_CEP` | CEP de origem |
 | `SUPERFRETE_SANDBOX` | `true` / `false` |
 | `SUPERFRETE_SERVICES` | Ex.: `1,2,17` |
-| `SUPERFRETE_USER_AGENT` | Ex.: `LaBellaFlor/1.0 (email@...)` |
+| `SUPERFRETE_USER_AGENT` | Ex.: `LaBellaFlor/1.0 (nathaliasacheti@hotmail.com)` |
 
 ## Resumo mínimo para a cliente (Neon + admin)
 
 ```text
 DATABASE_URL=postgresql://...-pooler.../neondb?sslmode=require
-ADMIN_EMAIL=dona@labellaflor.boutique
+ADMIN_EMAIL=nathaliasacheti@hotmail.com
 ADMIN_PASSWORD=********
 ADMIN_SECRET=********
 ```

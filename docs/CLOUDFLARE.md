@@ -45,7 +45,7 @@ npx wrangler secret put SUPERFRETE_TOKEN
 |------|---------|---------|
 | `NEXT_PUBLIC_SITE_URL` | não (plain) | `https://labellaflor.<subdomain>.workers.dev` ou domínio custom |
 | `DATABASE_URL` | sim | Neon pooled |
-| `ADMIN_EMAIL` | sim | e-mail da dona |
+| `ADMIN_EMAIL` | sim | `nathaliasacheti@hotmail.com` (dona / conta Cloudflare) |
 | `ADMIN_PASSWORD` | sim | senha |
 | `ADMIN_SECRET` | sim | frase longa |
 | `MERCADOPAGO_ACCESS_TOKEN` | sim | token MP |
@@ -54,7 +54,7 @@ npx wrangler secret put SUPERFRETE_TOKEN
 | `SUPERFRETE_ORIGIN_CEP` | não | CEP 8 dígitos |
 | `SUPERFRETE_SANDBOX` | não | `false` |
 | `SUPERFRETE_SERVICES` | não | `1,2,17` |
-| `SUPERFRETE_USER_AGENT` | não | `LaBellaFlor/1.0 (email@...)` |
+| `SUPERFRETE_USER_AGENT` | não | `LaBellaFlor/1.0 (nathaliasacheti@hotmail.com)` |
 
 ## Domínio da cliente
 

@@ -1,0 +1,19 @@
+# Copie para .dev.vars (local / wrangler) — nunca commitar .dev.vars
+# Conta Cloudflare da cliente: nathaliasacheti@hotmail.com
+
+ADMIN_EMAIL=nathaliasacheti@hotmail.com
+ADMIN_PASSWORD=
+ADMIN_SECRET=
+
+DATABASE_URL=
+
+NEXT_PUBLIC_SITE_URL=http://localhost:8787
+
+MERCADOPAGO_ACCESS_TOKEN=
+MERCADOPAGO_SANDBOX=true
+
+SUPERFRETE_TOKEN=
+SUPERFRETE_ORIGIN_CEP=
+SUPERFRETE_SANDBOX=true
+SUPERFRETE_SERVICES=1,2,17
+SUPERFRETE_USER_AGENT=LaBellaFlor/1.0 (nathaliasacheti@hotmail.com)

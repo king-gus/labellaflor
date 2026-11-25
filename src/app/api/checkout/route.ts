@@ -4,6 +4,7 @@ import type { CartRequestItem } from "@/lib/cart";
 import { getStoreProduct } from "@/lib/catalog";
 import { hasDatabase } from "@/lib/db";
 import { createOrder } from "@/lib/orders";
+import { createStonePaymentLink, hasStonePayment } from "@/lib/stone";
 
 type CheckoutBody = {
   items: CartRequestItem[];
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
     size: Size;
     quantity: number;
     title: string;
-    unitPrice: number;
+    unitPriceCents: number;
   }[] = [];
 
   for (const item of items) {
@@ -99,19 +100,19 @@ export async function POST(request: Request) {
       size: item.size,
       quantity: Math.min(item.quantity, 10),
       title: `${product.name} · Tam. ${item.size}`,
-      unitPrice: product.priceCents / 100,
+      unitPriceCents: product.priceCents,
     });
   }
 
   const subtotalCents = lines.reduce(
-    (sum, l) => sum + Math.round(l.unitPrice * 100) * l.quantity,
+    (sum, l) => sum + l.unitPriceCents * l.quantity,
     0,
   );
   const shippingCents = Math.round(shipping.priceCents);
   const totalCents = subtotalCents + shippingCents;
   const orderId = `lbf-${Date.now().toString(36)}`;
 
-  async function persistOrder(mpPreferenceId?: string) {
+  async function persistOrder(paymentExternalId?: string) {
     if (!hasDatabase()) return;
     try {
       await createOrder({
@@ -124,11 +125,11 @@ export async function POST(request: Request) {
           productName: l.title.replace(/ · Tam\. .*$/, ""),
           size: l.size,
           quantity: l.quantity,
-          unitPriceCents: Math.round(l.unitPrice * 100),
+          unitPriceCents: l.unitPriceCents,
         })),
         subtotalCents,
         totalCents,
-        mpPreferenceId,
+        paymentExternalId,
       });
     } catch (err) {
       console.error("Failed to persist order", err);
@@ -137,13 +138,9 @@ export async function POST(request: Request) {
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "http://localhost:3000");
+    "https://labellaflor.labellaflor.workers.dev";
 
-  const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
-
-  if (!token) {
+  if (!hasStonePayment()) {
     await persistOrder();
     return NextResponse.json({
       mode: "manual",
@@ -153,103 +150,55 @@ export async function POST(request: Request) {
     });
   }
 
-  const preference = {
-    external_reference: orderId,
-    items: [
-      ...lines.map((l) => ({
-        id: `${l.productId}-${l.size}`,
-        title: l.title,
-        quantity: l.quantity,
-        currency_id: "BRL",
-        unit_price: l.unitPrice,
-      })),
-      ...(shippingCents > 0
-        ? [
-            {
-              id: `frete-${shipping.serviceId}`,
-              title: `Frete · ${shipping.serviceName}`,
-              quantity: 1,
-              currency_id: "BRL",
-              unit_price: shippingCents / 100,
-            },
-          ]
-        : []),
-    ],
-    payer: {
-      name: customer.name,
-      email: customer.email,
-      phone: { number: customer.phone.replace(/\D/g, "") },
-      address: {
-        zip_code: customer.cep.replace(/\D/g, ""),
-        street_name: customer.street,
-        street_number: customer.number,
-      },
-    },
-    metadata: {
-      order_id: orderId,
-      complement: customer.complement ?? "",
-      neighborhood: customer.neighborhood,
-      city: customer.city,
-      state: customer.state,
-      shipping_service_id: String(shipping.serviceId),
-      shipping_service_name: shipping.serviceName,
-      shipping_days:
-        shipping.deliveryDays != null ? String(shipping.deliveryDays) : "",
-    },
-    back_urls: {
-      success: `${siteUrl}/pedido/sucesso`,
-      failure: `${siteUrl}/checkout?status=failure`,
-      pending: `${siteUrl}/pedido/sucesso?status=pending`,
-    },
-    auto_return: "approved",
-    statement_descriptor: "LA BELLA FLOR",
-  };
+  const stoneItems = [
+    ...lines.map((l) => ({
+      name: l.title,
+      amountCents: l.unitPriceCents,
+      quantity: l.quantity,
+      description: l.title,
+    })),
+    ...(shippingCents > 0
+      ? [
+          {
+            name: `Frete · ${shipping.serviceName}`.slice(0, 64),
+            amountCents: shippingCents,
+            quantity: 1,
+            description: shipping.serviceName,
+          },
+        ]
+      : []),
+  ];
 
-  const mpRes = await fetch(
-    "https://api.mercadopago.com/checkout/preferences",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+  try {
+    const link = await createStonePaymentLink({
+      orderId,
+      items: stoneItems,
+      customer: {
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
       },
-      body: JSON.stringify(preference),
-    },
-  );
+      successUrl: `${siteUrl}/pedido/sucesso?order=${encodeURIComponent(orderId)}`,
+    });
 
-  if (!mpRes.ok) {
-    const detail = await mpRes.text();
-    console.error("Mercado Pago error", mpRes.status, detail);
+    await persistOrder(link.id);
+
+    return NextResponse.json({
+      mode: "stone",
+      orderId,
+      paymentLinkId: link.id,
+      checkoutUrl: link.url,
+    });
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
-      { error: "Não foi possível iniciar o pagamento. Tente de novo." },
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "Não foi possível iniciar o pagamento. Tente de novo.",
+      },
       { status: 502 },
     );
   }
-
-  const data = (await mpRes.json()) as {
-    id: string;
-    init_point?: string;
-    sandbox_init_point?: string;
-  };
-
-  const checkoutUrl =
-    process.env.MERCADOPAGO_SANDBOX === "true"
-      ? data.sandbox_init_point || data.init_point
-      : data.init_point || data.sandbox_init_point;
-
-  if (!checkoutUrl) {
-    return NextResponse.json(
-      { error: "Checkout sem URL de pagamento." },
-      { status: 502 },
-    );
-  }
-
-  await persistOrder(data.id);
-
-  return NextResponse.json({
-    mode: "mercadopago",
-    orderId,
-    preferenceId: data.id,
-    checkoutUrl,
-  });
 }

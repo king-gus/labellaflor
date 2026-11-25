@@ -16,7 +16,7 @@ import { PhoneBar } from "@/components/PhoneBar";
  * moments: word-highlight + photo-chapters
  * brand: #006078 + neutros do feed · Cormorant / Montserrat
  * vibe: chic · casual · moderna (conjuntos, linho, luz clara)
- * CTA: Carrinho + checkout (Mercado Pago)
+ * CTA: Carrinho + checkout (Stone / Pagar.me)
  */
 export default function Home() {
   return (

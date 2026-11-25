@@ -40,7 +40,8 @@ export type CreateOrderInput = {
   items: OrderItemInput[];
   subtotalCents: number;
   totalCents: number;
-  mpPreferenceId?: string;
+  /** ID do link Stone/Pagar.me (coluna legada mp_preference_id). */
+  paymentExternalId?: string;
 };
 
 export type OrderRow = {
@@ -96,7 +97,7 @@ export async function createOrder(input: CreateOrderInput) {
       ${input.shipping.deliveryDays ?? null},
       ${input.subtotalCents},
       ${input.totalCents},
-      ${input.mpPreferenceId || null}
+      ${input.paymentExternalId || null}
     )
   `;
 

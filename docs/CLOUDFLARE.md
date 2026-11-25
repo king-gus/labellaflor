@@ -46,9 +46,11 @@ npx wrangler secret put DATABASE_URL
 npx wrangler secret put ADMIN_EMAIL
 npx wrangler secret put ADMIN_PASSWORD
 npx wrangler secret put ADMIN_SECRET
-npx wrangler secret put MERCADOPAGO_ACCESS_TOKEN
+npx wrangler secret put PAGARME_SECRET_KEY
 npx wrangler secret put SUPERFRETE_TOKEN
 ```
+
+Passo a passo das chaves Stone: [STONE.md](./STONE.md).
 
 ### Lista completa (texto plano ou secret)
 
@@ -59,8 +61,8 @@ npx wrangler secret put SUPERFRETE_TOKEN
 | `ADMIN_EMAIL` | sim | `nathaliasacheti@hotmail.com` (dona / conta Cloudflare) |
 | `ADMIN_PASSWORD` | sim | senha |
 | `ADMIN_SECRET` | sim | frase longa |
-| `MERCADOPAGO_ACCESS_TOKEN` | sim | token MP |
-| `MERCADOPAGO_SANDBOX` | não | `false` |
+| `PAGARME_SECRET_KEY` | sim | `sk_test_...` ou `sk_...` (Stone/Pagar.me) |
+| `PAGARME_PAYMENT_METHODS` | não | `credit_card,pix,boleto` |
 | `SUPERFRETE_TOKEN` | sim | token SuperFrete |
 | `SUPERFRETE_ORIGIN_CEP` | não | CEP 8 dígitos |
 | `SUPERFRETE_SANDBOX` | não | `false` |
@@ -96,7 +98,7 @@ Ou no painel: Workers → **labellaflor** → Settings → Domains & Routes → 
 NEXT_PUBLIC_SITE_URL=https://www.labellaflorboutique.com.br
 ```
 
-(necessário para retorno do Mercado Pago)
+(necessário para retorno do pagamento Stone / Pagar.me)
 
 ## Preview local (runtime Workers)
 

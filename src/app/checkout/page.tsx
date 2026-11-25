@@ -145,7 +145,7 @@ export default function CheckoutPage() {
         return;
       }
       clear();
-      if (data.mode === "mercadopago") {
+      if (data.mode === "stone") {
         window.location.href = data.checkoutUrl;
         return;
       }
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
               Checkout
             </h1>
             <p className="mt-2 max-w-md text-muted">
-              Frete cotado pela SuperFrete. Pagamento no Mercado Pago (Pix,
+              Frete cotado pela SuperFrete. Pagamento via Stone / Pagar.me (Pix,
               cartão ou boleto).
             </p>
 

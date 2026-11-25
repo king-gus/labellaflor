@@ -28,7 +28,7 @@ function SuccessBody() {
       </h1>
       <p className="mt-4 text-muted">
         {manual
-          ? "Seu pedido foi registrado. Em breve o pagamento online (Mercado Pago) estará ativo nesta loja — por enquanto a equipe confirma o pedido por e-mail."
+          ? "Seu pedido foi registrado. Em breve o pagamento online (Stone) estará ativo nesta loja — por enquanto a equipe confirma o pedido por e-mail."
           : pending
             ? "Assim que o Pix ou boleto for compensado, seguimos com o envio."
             : "Recebemos seu pedido. Você ganha um e-mail com os detalhes e o código de rastreio quando o pacote sair."}

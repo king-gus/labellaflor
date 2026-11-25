@@ -51,8 +51,8 @@ Só **uma** conta acessa o painel — a definida nestas variáveis:
 | Variável | Uso |
 |----------|-----|
 | `NEXT_PUBLIC_SITE_URL` | URL pública (`https://www.labellaflorboutique.com.br`) |
-| `MERCADOPAGO_ACCESS_TOKEN` | Pagamento |
-| `MERCADOPAGO_SANDBOX` | `true` / `false` |
+| `PAGARME_SECRET_KEY` | Pagamento Stone / Pagar.me (`sk_test_...` ou `sk_...`) — ver [STONE.md](./STONE.md) |
+| `PAGARME_PAYMENT_METHODS` | Opcional: `credit_card,pix,boleto` |
 | `SUPERFRETE_TOKEN` | Cotação de frete |
 | `SUPERFRETE_ORIGIN_CEP` | CEP de origem |
 | `SUPERFRETE_SANDBOX` | `true` / `false` |

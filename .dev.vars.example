@@ -9,8 +9,10 @@ DATABASE_URL=
 
 NEXT_PUBLIC_SITE_URL=https://www.labellaflorboutique.com.br
 
-MERCADOPAGO_ACCESS_TOKEN=
-MERCADOPAGO_SANDBOX=true
+# Stone / Pagar.me — sk_test_... (sandbox) ou sk_... (produção)
+PAGARME_SECRET_KEY=
+# Opcional: credit_card,pix,boleto
+PAGARME_PAYMENT_METHODS=credit_card,pix,boleto
 
 SUPERFRETE_TOKEN=
 SUPERFRETE_ORIGIN_CEP=

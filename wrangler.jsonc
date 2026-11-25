@@ -14,15 +14,12 @@
       "service": "labellaflor"
     }
   ],
-  "images": {
-    "binding": "IMAGES"
-  },
-  "r2_buckets": [
-    {
-      "binding": "PRODUCT_IMAGES",
-      "bucket_name": "labellaflor-products"
-    }
-  ],
+  // R2: reativar após habilitar R2 no dashboard da cliente
+  // (Dashboard → R2 → Enable → bucket labellaflor-products)
+  // "images": { "binding": "IMAGES" },
+  // "r2_buckets": [
+  //   { "binding": "PRODUCT_IMAGES", "bucket_name": "labellaflor-products" }
+  // ],
   "observability": {
     "enabled": true
   }

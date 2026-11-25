@@ -4,10 +4,16 @@ A loja roda em **Cloudflare Workers** via `@opennextjs/cloudflare` (OpenNext).
 
 ## O que a cliente precisa
 
-1. Conta Cloudflare (Workers habilitado)
-2. Login no Wrangler (ou Workers Builds conectado ao GitHub)
-3. Bucket **R2** chamado `labellaflor-products` (fotos dos produtos)
-4. As mesmas variáveis de ambiente da loja (ver abaixo)
+1. Conta Cloudflare (`nathaliasacheti@hotmail.com`) com **e-mail verificado**
+2. Abrir [Workers onboarding](https://dash.cloudflare.com/413dcccffa252cb46d832d037bfd165d/workers/onboarding) (subdomínio `labellaflor.workers.dev` já registrado)
+3. Habilitar **R2** no dashboard e criar o bucket `labellaflor-products`
+4. Login no Wrangler (ou Workers Builds conectado ao GitHub)
+5. As mesmas variáveis de ambiente da loja (ver abaixo)
+
+### Bloqueios comuns na conta nova
+
+- Sem verificar o e-mail: deploy Workers falha com código `10034`
+- Sem habilitar R2 no dashboard: criar bucket falha com código `10042`
 
 ### Criar o bucket R2
 

@@ -1,10 +1,5 @@
 import { getSql, hasDatabase } from "@/lib/db";
-import {
-  PRODUCTS,
-  SIZES,
-  type Product,
-  type Size,
-} from "@/lib/products";
+import { SIZES, type Product, type Size } from "@/lib/products";
 
 export type StockMap = Record<Size, number>;
 
@@ -49,7 +44,7 @@ async function loadImagesByProduct(productIds: string[]) {
 }
 
 export async function listStoreProducts(): Promise<Product[]> {
-  if (!hasDatabase()) return PRODUCTS;
+  if (!hasDatabase()) return [];
   const sql = getSql();
   const rows = await sql`
     SELECT id, name, category, price_cents AS "priceCents", image_url AS image
@@ -57,7 +52,7 @@ export async function listStoreProducts(): Promise<Product[]> {
     WHERE active = TRUE
     ORDER BY updated_at DESC, name ASC
   `;
-  if (!rows.length) return PRODUCTS;
+  if (!rows.length) return [];
   const ids = rows.map((r) => String(r.id));
   const imagesMap = await loadImagesByProduct(ids);
   return rows.map((r) => {
@@ -76,7 +71,7 @@ export async function listStoreProducts(): Promise<Product[]> {
 }
 
 export async function getStoreProduct(id: string): Promise<Product | undefined> {
-  if (!hasDatabase()) return PRODUCTS.find((p) => p.id === id);
+  if (!hasDatabase()) return undefined;
   const sql = getSql();
   const rows = await sql`
     SELECT id, name, category, price_cents AS "priceCents", image_url AS image
@@ -84,7 +79,7 @@ export async function getStoreProduct(id: string): Promise<Product | undefined> 
     WHERE id = ${id} AND active = TRUE
     LIMIT 1
   `;
-  if (!rows[0]) return PRODUCTS.find((p) => p.id === id);
+  if (!rows[0]) return undefined;
   const r = rows[0];
   const imagesMap = await loadImagesByProduct([String(r.id)]);
   const gallery = imagesMap.get(String(r.id)) || [];
@@ -204,17 +199,11 @@ export async function deleteProduct(id: string) {
   await sql`DELETE FROM products WHERE id = ${id}`;
 }
 
-export async function seedProductsFromStatic() {
-  for (const p of PRODUCTS) {
-    await upsertProduct({
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      priceCents: p.priceCents,
-      images: p.images,
-      description: "",
-      active: true,
-      stock: { P: 5, M: 5, G: 5, GG: 5 },
-    });
-  }
+export async function clearAllProducts() {
+  const sql = getSql();
+  await sql`DELETE FROM order_items`;
+  await sql`DELETE FROM orders`;
+  await sql`DELETE FROM product_images`;
+  await sql`DELETE FROM product_stock`;
+  await sql`DELETE FROM products`;
 }

@@ -1,4 +1,4 @@
-import type { CartItem } from "@/lib/cart";
+import type { CartRequestItem } from "@/lib/cart";
 import type { Product } from "@/lib/products";
 
 /** Dimensões padrão de encomenda de roupa (cm / kg) quando o produto não define. */
@@ -44,7 +44,7 @@ function toCents(value: number | string | undefined) {
 }
 
 export function buildProductsPayload(
-  items: CartItem[],
+  items: CartRequestItem[],
   catalog: Product[],
 ) {
   return items.flatMap((item) => {
@@ -98,7 +98,7 @@ export function superfreteBaseUrl() {
 
 export async function quoteSuperfrete(args: {
   toCep: string;
-  items: CartItem[];
+  items: CartRequestItem[];
   catalog: Product[];
   insuranceValueReais?: number;
 }): Promise<ShippingQuoteOption[]> {

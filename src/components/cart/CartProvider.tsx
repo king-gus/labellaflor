@@ -18,7 +18,6 @@ import {
 import {
   FREE_SHIPPING_FROM_CENTS,
   formatBRL,
-  getProduct,
   shippingForSubtotal,
   type Size,
 } from "@/lib/products";
@@ -34,7 +33,16 @@ type CartContextValue = {
   format: typeof formatBRL;
   open: boolean;
   setOpen: (open: boolean) => void;
-  addItem: (productId: string, size: Size, quantity?: number) => void;
+  addItem: (
+    product: {
+      productId: string;
+      name: string;
+      image: string;
+      priceCents: number;
+    },
+    size: Size,
+    quantity?: number,
+  ) => void;
   setQuantity: (productId: string, size: Size, quantity: number) => void;
   removeItem: (productId: string, size: Size) => void;
   clear: () => void;
@@ -45,7 +53,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 function normalize(items: CartItem[]): CartItem[] {
   const map = new Map<string, CartItem>();
   for (const item of items) {
-    if (!getProduct(item.productId) || item.quantity < 1) continue;
+    if (!item.productId || item.quantity < 1 || !item.name) continue;
     const key = cartLineKey(item.productId, item.size);
     const prev = map.get(key);
     if (prev) {
@@ -78,10 +86,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, ready]);
 
   const addItem = useCallback(
-    (productId: string, size: Size, quantity = 1) => {
-      if (!getProduct(productId) || quantity < 1) return;
+    (
+      product: {
+        productId: string;
+        name: string;
+        image: string;
+        priceCents: number;
+      },
+      size: Size,
+      quantity = 1,
+    ) => {
+      if (!product.productId || quantity < 1 || !product.name) return;
       setItems((prev) =>
-        normalize([...prev, { productId, size, quantity }]),
+        normalize([
+          ...prev,
+          {
+            productId: product.productId,
+            size,
+            quantity,
+            name: product.name,
+            image: product.image,
+            priceCents: product.priceCents,
+          },
+        ]),
       );
       setOpen(true);
     },
@@ -114,21 +141,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clear = useCallback(() => setItems([]), []);
 
-  const lines = useMemo<CartLine[]>(() => {
-    return items.flatMap((item) => {
-      const product = getProduct(item.productId);
-      if (!product) return [];
-      return [
-        {
-          ...item,
-          name: product.name,
-          image: product.image,
-          priceCents: product.priceCents,
-          lineTotalCents: product.priceCents * item.quantity,
-        },
-      ];
-    });
-  }, [items]);
+  const lines = useMemo<CartLine[]>(
+    () =>
+      items.map((item) => ({
+        ...item,
+        lineTotalCents: item.priceCents * item.quantity,
+      })),
+    [items],
+  );
 
   const subtotalCents = lines.reduce((sum, l) => sum + l.lineTotalCents, 0);
   const shippingCents = shippingForSubtotal(subtotalCents);

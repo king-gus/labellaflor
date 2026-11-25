@@ -152,18 +152,25 @@ export function ProductsAdmin() {
     }
   }
 
-  async function seed() {
+  async function clearCatalog() {
+    if (
+      !confirm(
+        "Apagar TODOS os produtos, estoque e pedidos do banco? Esta ação não tem volta.",
+      )
+    ) {
+      return;
+    }
     setBusy(true);
     setError(null);
     const res = await fetch("/api/admin/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "seed" }),
+      body: JSON.stringify({ action: "clear" }),
     });
     const data = (await res.json()) as { error?: string };
-    if (!res.ok) setError(data.error || "Falha no seed.");
+    if (!res.ok) setError(data.error || "Falha ao limpar catálogo.");
     else {
-      setMessage("Catálogo inicial importado (5 un. por tamanho).");
+      setMessage("Catálogo limpo. Pode cadastrar os produtos novos.");
       await load();
     }
     setBusy(false);
@@ -206,8 +213,13 @@ export function ProductsAdmin() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button type="button" className="btn btn--ghost btn--sm" onClick={seed} disabled={busy}>
-            Importar catálogo atual
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            onClick={clearCatalog}
+            disabled={busy}
+          >
+            Limpar catálogo
           </button>
           <button type="button" className="btn btn--ghost btn--sm" onClick={logout}>
             Sair

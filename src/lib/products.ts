@@ -25,73 +25,8 @@ export const CATEGORIES = [
 export const SHIPPING_CENTS = 2500;
 export const FREE_SHIPPING_FROM_CENTS = 29900;
 
-/**
- * Mantém só as 2 fotos oficiais do Instagram (luana-hi-1 / luana-hi-2).
- * Demais imagens: geradas em alta no estilo Conjunto Luana.
- */
-function withImages(image: string, extras: string[] = []): Pick<Product, "image" | "images"> {
-  const images = [image, ...extras.filter((u) => u && u !== image)];
-  return { image: images[0], images };
-}
-
-export const PRODUCTS: Product[] = [
-  {
-    id: "luana-preto",
-    name: "Conjunto Luana — Preto",
-    priceCents: 35990,
-    category: "Conjuntos",
-    ...withImages("/img/luana-hi-1.jpg", ["/img/luana-hi-2.jpg"]),
-  },
-  {
-    id: "luana-azul",
-    name: "Conjunto Luana — Azul céu",
-    priceCents: 35990,
-    category: "Conjuntos",
-    ...withImages("/img/hq-azul.jpg"),
-  },
-  {
-    id: "luana-provador",
-    name: "Luana no provador",
-    priceCents: 35990,
-    category: "Conjuntos",
-    ...withImages("/img/hq-provador.jpg"),
-  },
-  {
-    id: "blusa-azul",
-    name: "Blusa Azul Claro",
-    priceCents: 12900,
-    category: "Blusas",
-    ...withImages("/img/hq-blusa.jpg"),
-  },
-  {
-    id: "saia-envelope",
-    name: "Saia Envelope",
-    priceCents: 15900,
-    category: "Saias e shorts",
-    ...withImages("/img/hq-saia.jpg"),
-  },
-  {
-    id: "luana-detalhe",
-    name: "Conjunto Luana — detalhe",
-    priceCents: 35990,
-    category: "Conjuntos",
-    ...withImages("/img/luana-hi-2.jpg", ["/img/luana-hi-1.jpg"]),
-  },
-  {
-    id: "top-menta",
-    name: "Top Menta",
-    priceCents: 11900,
-    category: "Blusas",
-    ...withImages("/img/hq-menta.jpg"),
-  },
-  {
-    id: "conjunto-menta",
-    name: "Conjunto Menta",
-    priceCents: 23900,
-    category: "Conjuntos",
-    ...withImages("/img/hq-set-menta.jpg"),
-  },
-];
+/** Catálogo inicial vazio — produtos vêm só do admin / Neon. */
+export const PRODUCTS: Product[] = [];
 
 export const CHAPTERS = [
   {

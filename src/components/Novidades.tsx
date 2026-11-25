@@ -17,71 +17,91 @@ export async function Novidades() {
               Novidades
             </h2>
             <p className="mt-3 text-muted">
-              Conjunto Luana em preto e azul céu — viscose com linho, P ao GG.
-              Adicione ao carrinho e finalize no site.
+              {products.length
+                ? "Peças selecionadas — adicione ao carrinho e finalize no site."
+                : "Em breve novas peças por aqui. Cadastre no painel admin para publicar na vitrine."}
             </p>
           </div>
         </div>
 
-        <ul className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
-          {lead.map((product) => (
-            <li key={product.id} className="product-card">
-              <div className="block">
-                <span className="photo-frame aspect-square">
-                  <Image
-                    src={product.image}
-                    alt=""
-                    width={900}
-                    height={900}
-                    className="h-full w-full object-cover"
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                  />
-                </span>
-                <span className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                  <span>
-                    <span className="block font-display text-[1.35rem] leading-snug">
-                      {product.name}
+        {!products.length ? (
+          <p className="mt-12 border border-ink/10 bg-surface px-6 py-10 text-center text-muted">
+            Nenhum produto ativo no momento.
+          </p>
+        ) : (
+          <>
+            <ul className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
+              {lead.map((product) => (
+                <li key={product.id} className="product-card">
+                  <div className="block">
+                    <span className="photo-frame aspect-square">
+                      <Image
+                        src={product.image}
+                        alt=""
+                        width={900}
+                        height={900}
+                        className="h-full w-full object-cover"
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                      />
                     </span>
-                    <span className="mt-1 block text-[0.8125rem] tracking-wide text-muted">
-                      {formatBRL(product.priceCents)}
+                    <span className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <span>
+                        <span className="block font-display text-[1.35rem] leading-snug">
+                          {product.name}
+                        </span>
+                        <span className="mt-1 block text-[0.8125rem] tracking-wide text-muted">
+                          {formatBRL(product.priceCents)}
+                        </span>
+                      </span>
+                      <AddToCartButton
+                        productId={product.id}
+                        name={product.name}
+                        image={product.image}
+                        priceCents={product.priceCents}
+                      />
                     </span>
-                  </span>
-                  <AddToCartButton productId={product.id} />
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-        <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-14 md:grid-cols-3 md:gap-x-7">
-          {rest.map((product) => (
-            <li key={product.id} className="product-card">
-              <div className="block">
-                <span className="photo-frame aspect-square">
-                  <Image
-                    src={product.image}
-                    alt=""
-                    width={700}
-                    height={700}
-                    className="h-full w-full object-cover"
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                  />
-                </span>
-                <span className="mt-4 block">
-                  <span className="block text-[0.9375rem] leading-snug">
-                    {product.name}
-                  </span>
-                  <span className="mt-1 block text-[0.8125rem] text-muted">
-                    {formatBRL(product.priceCents)}
-                  </span>
-                </span>
-                <div className="mt-4">
-                  <AddToCartButton productId={product.id} fullWidth />
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+            <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-14 md:grid-cols-3 md:gap-x-7">
+              {rest.map((product) => (
+                <li key={product.id} className="product-card">
+                  <div className="block">
+                    <span className="photo-frame aspect-square">
+                      <Image
+                        src={product.image}
+                        alt=""
+                        width={700}
+                        height={700}
+                        className="h-full w-full object-cover"
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                      />
+                    </span>
+                    <span className="mt-4 block">
+                      <span className="block text-[0.9375rem] leading-snug">
+                        {product.name}
+                      </span>
+                      <span className="mt-1 block text-[0.8125rem] text-muted">
+                        {formatBRL(product.priceCents)}
+                      </span>
+                    </span>
+                    <div className="mt-4">
+                      <AddToCartButton
+                        productId={product.id}
+                        name={product.name}
+                        image={product.image}
+                        priceCents={product.priceCents}
+                        fullWidth
+                      />
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </section>
   );

@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { isAdminLoggedIn } from "@/lib/admin-auth";
 import { hasDatabase } from "@/lib/db";
 import {
+  clearAllProducts,
   deleteProduct,
   listAdminProducts,
-  seedProductsFromStatic,
   upsertProduct,
 } from "@/lib/catalog";
 import { SIZES, type Size } from "@/lib/products";
@@ -41,8 +41,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "JSON inválido." }, { status: 400 });
   }
 
-  if (body.action === "seed") {
-    await seedProductsFromStatic();
+  if (body.action === "clear") {
+    await clearAllProducts();
     return NextResponse.json({ ok: true });
   }
 

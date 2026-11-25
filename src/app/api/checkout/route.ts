@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { formatBRL, SIZES, type Size } from "@/lib/products";
-import type { CartItem } from "@/lib/cart";
+import type { CartRequestItem } from "@/lib/cart";
 import { getStoreProduct } from "@/lib/catalog";
 import { hasDatabase } from "@/lib/db";
 import { createOrder } from "@/lib/orders";
 
 type CheckoutBody = {
-  items: CartItem[];
+  items: CartRequestItem[];
   customer: {
     name: string;
     email: string;

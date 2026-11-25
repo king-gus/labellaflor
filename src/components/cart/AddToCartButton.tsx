@@ -6,6 +6,9 @@ import { SIZES, type Size } from "@/lib/products";
 
 type Props = {
   productId: string;
+  name: string;
+  image: string;
+  priceCents: number;
   className?: string;
   label?: string;
   fullWidth?: boolean;
@@ -13,6 +16,9 @@ type Props = {
 
 export function AddToCartButton({
   productId,
+  name,
+  image,
+  priceCents,
   className = "btn btn--sm btn--ghost",
   label = "Adicionar",
   fullWidth,
@@ -63,7 +69,7 @@ export function AddToCartButton({
         type="button"
         className={`btn btn--sm${fullWidth ? " w-full" : ""}`}
         onClick={() => {
-          addItem(productId, size);
+          addItem({ productId, name, image, priceCents }, size);
           setPicking(false);
         }}
       >

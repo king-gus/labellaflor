@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import type { CartItem } from "@/lib/cart";
+import type { CartRequestItem } from "@/lib/cart";
 import { getStoreProduct } from "@/lib/catalog";
 import { SIZES, type Size } from "@/lib/products";
 import { quoteSuperfrete } from "@/lib/shipping";
 
 type Body = {
   cep: string;
-  items: CartItem[];
+  items: CartRequestItem[];
 };
 
 function isSize(value: string): value is Size {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const items: CartItem[] = [];
+  const items: CartRequestItem[] = [];
   const catalog = [];
   let insurance = 0;
   for (const item of body.items) {

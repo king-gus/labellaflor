@@ -25,11 +25,18 @@
       "service": "labellaflor"
     }
   ],
-  // Custom Domains: reativar depois de Add Site + nameservers Active
-  // "routes": [
-  //   { "pattern": "www.labellaflorboutique.com.br", "custom_domain": true },
-  //   { "pattern": "labellaflorboutique.com.br", "custom_domain": true }
-  // ],
+  "routes": [
+    {
+      "pattern": "www.labellaflorboutique.com.br",
+      "custom_domain": true,
+      "zone_name": "labellaflorboutique.com.br"
+    },
+    {
+      "pattern": "labellaflorboutique.com.br",
+      "custom_domain": true,
+      "zone_name": "labellaflorboutique.com.br"
+    }
+  ],
   // R2: após Enable no dashboard — bucket em jurisdição padrão (R2 sem SA dedicada)
   // "images": { "binding": "IMAGES" },
   // "r2_buckets": [

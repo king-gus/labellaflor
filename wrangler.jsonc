@@ -4,8 +4,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-16",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  // Evita workers.dev até o e-mail da conta ser verificado (erro 10034)
-  "workers_dev": false,
+  "workers_dev": true,
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -16,17 +15,11 @@
       "service": "labellaflor"
     }
   ],
-  // Domínio da loja (zona precisa existir na mesma conta Cloudflare)
-  "routes": [
-    {
-      "pattern": "www.labellaflorboutique.com.br",
-      "custom_domain": true
-    },
-    {
-      "pattern": "labellaflorboutique.com.br",
-      "custom_domain": true
-    }
-  ],
+  // Custom Domains: reativar depois de Add Site + nameservers Active
+  // "routes": [
+  //   { "pattern": "www.labellaflorboutique.com.br", "custom_domain": true },
+  //   { "pattern": "labellaflorboutique.com.br", "custom_domain": true }
+  // ],
   // R2: reativar após habilitar R2 no dashboard da cliente
   // (Dashboard → R2 → Enable → bucket labellaflor-products)
   // "images": { "binding": "IMAGES" },

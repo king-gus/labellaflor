@@ -74,9 +74,30 @@ Atualize `NEXT_PUBLIC_SITE_URL` para esse domínio (necessário para retorno do 
 npm run preview
 ```
 
-## GitHub (opcional)
+## GitHub Actions (push → Cloudflare)
 
-Em Cloudflare → Workers → **Settings → Builds**: conectar o repo `king-gus/labellaflor`, branch `master`, comando de deploy `npm run deploy` (ou o build command do OpenNext conforme o painel).
+O workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) faz deploy automático em todo push em **`master`** ou **`main`**.
+
+### Secrets no GitHub (`king-gus/labellaflor`)
+
+Repo → **Settings → Secrets and variables → Actions** → New repository secret:
+
+| Secret | Valor |
+|--------|--------|
+| `CLOUDFLARE_ACCOUNT_ID` | `413dcccffa252cb46d832d037bfd165d` |
+| `CLOUDFLARE_API_TOKEN` | Token com template **Edit Cloudflare Workers** (conta da cliente) |
+
+Criar o token: [Account API tokens](https://dash.cloudflare.com/413dcccffa252cb46d832d037bfd165d/api-tokens) → Create Token → **Edit Cloudflare Workers** → restringir à conta `Nathaliasacheti@hotmail.com's Account`.
+
+Depois do primeiro push (ou **Actions → Deploy Cloudflare → Run workflow**), o Worker sobe em:
+
+`https://labellaflor.labellaflor.workers.dev`
+
+Secrets da loja (`ADMIN_*`, `DATABASE_URL`, etc.) continuam no **dashboard do Worker** (o deploy usa `--keep-vars` para não apagá-los).
+
+### Alternativa: Workers Builds
+
+Em Cloudflare → Workers → **Settings → Builds**: conectar o repo `king-gus/labellaflor`, branch `master`, comando `npm run deploy`.
 
 ## Nota sobre Vercel
 

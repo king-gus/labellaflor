@@ -22,6 +22,11 @@ No painel Cloudflare → **R2** → Create bucket → nome: `labellaflor-product
 
 As imagens **não** vão para o Neon: o arquivo fica no R2; no Neon só as URLs (`/api/media/...`).
 
+## Região (América do Sul)
+
+- **Neon:** `aws-sa-east-1` (São Paulo)
+- **Worker:** `placement.region = aws:sa-east-1` no `wrangler.jsonc` (roda no data center Cloudflare mais próximo de São Paulo)
+
 ## Deploy pela linha de comando
 
 ```bash

@@ -10,6 +10,11 @@
     "no_handle_cross_request_promise_resolution"
   ],
   "workers_dev": true,
+  // Roda o Worker perto do Neon em São Paulo (América do Sul)
+  "placement": {
+    "mode": "targeted",
+    "region": "aws:sa-east-1"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -25,8 +30,7 @@
   //   { "pattern": "www.labellaflorboutique.com.br", "custom_domain": true },
   //   { "pattern": "labellaflorboutique.com.br", "custom_domain": true }
   // ],
-  // R2: reativar após habilitar R2 no dashboard da cliente
-  // (Dashboard → R2 → Enable → bucket labellaflor-products)
+  // R2: após Enable no dashboard — bucket em jurisdição padrão (R2 sem SA dedicada)
   // "images": { "binding": "IMAGES" },
   // "r2_buckets": [
   //   { "binding": "PRODUCT_IMAGES", "bucket_name": "labellaflor-products" }

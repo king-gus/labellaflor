@@ -1,9 +1,11 @@
 # Variáveis Neon + Admin (para a dona da loja)
 
-Projeto Neon **`labellaflor`** (região `aws-sa-east-1` / São Paulo) criado e schema (`db/schema.sql`) aplicado.  
-`DATABASE_URL` (pooled), `ADMIN_EMAIL` e `ADMIN_SECRET` já estão como secrets no Worker Cloudflare `labellaflor`.
+Projeto Neon **`labellaflor`** na região **`aws-sa-east-1` (São Paulo / América do Sul)**.  
+Schema (`db/schema.sql`) aplicado. `DATABASE_URL` (pooled), `ADMIN_EMAIL` e `ADMIN_SECRET` no Worker Cloudflare.
 
-A cliente deve **reivindicar** o projeto Neon (conta dela) pelo link `claimable.neon.tech` gerado com `neon claim accept` — o projeto claimable expira se ninguém assumir.
+O Worker usa `placement.region = aws:sa-east-1` para executar perto do banco.
+
+A cliente deve **reivindicar** o projeto Neon (`neon claim accept`) — projetos claimable expiram se ninguém assumir.
 
 Ainda falta no Worker: **`ADMIN_PASSWORD`** (senha do painel `/admin`).
 
